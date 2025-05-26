@@ -1,0 +1,20 @@
+dist:
+  name: log-shipper
+  description: custom otel collector to ship logs via OTLP
+  version: 0.1.0
+
+receivers:
+  - name: otlp_receiver
+    gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.97.0
+  - name: filelog
+    gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.97.0
+
+processors:
+  - name: batch
+    gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.97.0
+  - name: k8sattributes
+    gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor v0.97.0
+
+exporters:
+  - name: otlp_exporter
+    gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.97.0
