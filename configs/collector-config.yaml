@@ -1,19 +1,28 @@
 receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
   filelog:
-    include: ["/var/log/app/*.log"]
+    include: ["/var/log/nginx/*.log"]
     start_at: beginning
     operators:
       - type: json_parser
+        id: parse_json_logs
         timestamp:
-          parse_from: attributes.timestamp
-          layout: '%Y-%m-%dT%H:%M:%SZ'
+          parse_from: body.ts
+        severity:
+          parse_from: body.level
+        attributes:
+          parse_from: body
 
 processors:
   batch: {}
+  k8sattributes: {}
 
 exporters:
   otlp:
-    endpoint: apm-server.default.svc.cluster.local:8200
+    endpoint: <your-backend-host>:4317
     tls:
       insecure: true
 
@@ -21,5 +30,37 @@ service:
   pipelines:
     logs:
       receivers: [filelog]
-      processors: [batch]
+      processors: [k8sattributes, batch]
       exporters: [otlp]
+
+    traces:
+      receivers: [otlp]
+      processors: [k8sattributes, batch]
+      exporters: [otlp]
+
+
+#receivers:
+#  filelog:
+#    include: ["/var/log/app/*.log"]
+#    start_at: beginning
+#    operators:
+#      - type: json_parser
+#        timestamp:
+#          parse_from: attributes.timestamp
+#          layout: '%Y-%m-%dT%H:%M:%SZ'
+#
+#processors:
+#  batch: {}
+#
+#exporters:
+#  otlp:
+#    endpoint: apm-server.default.svc.cluster.local:8200
+#    tls:
+#      insecure: true
+#
+#service:
+#  pipelines:
+#    logs:
+#      receivers: [filelog]
+#      processors: [batch]
+#      exporters: [otlp]

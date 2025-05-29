@@ -14,28 +14,61 @@ import (
 )
 
 func main() {
-	factories := component.Factories{
-		Receivers: map[component.Type]component.ReceiverFactory{
-			filelogreceiver.Type(): filelogreceiver.NewFactory(),
-			otlpreceiver.Type():    otlpreceiver.NewFactory(),
+// 	factories := component.Factories{
+    factories, err := component.MakeFactories(
+    		[]component.ReceiverFactory{
+    			filelogreceiver.NewFactory(),
+    			otlpreceiver.NewFactory(),
+    		},
+    		[]component.ProcessorFactory{
+    			batchprocessor.NewFactory(),
+    			k8sattributesprocessor.NewFactory(),
+    		},
+    		[]component.ExporterFactory{
+    			otlpexporter.NewFactory(),
+    		},
+    		[]component.ExtensionFactory{},
+    	)
+    	if err != nil {
+    		log.Fatalf("failed to make factories: %v", err)
+    	}
+
+// 		Receivers: map[component.Type]component.ReceiverFactory{
+// 			filelogreceiver.Type(): filelogreceiver.NewFactory(),
+// 			otlpreceiver.Type():    otlpreceiver.NewFactory(),
+// 		},
+// 		Processors: map[component.Type]component.ProcessorFactory{
+// 			batchprocessor.Type():             batchprocessor.NewFactory(),
+// 			k8sattributesprocessor.Type():     k8sattributesprocessor.NewFactory(),
+// 		},
+// 		Exporters: map[component.Type]component.ExporterFactory{
+// 			otlpexporter.Type(): otlpexporter.NewFactory(),
+// 		},
+// 		Extensions: map[component.Type]component.ExtensionFactory{},
+// 	}
+	appSettings := service.CollectorSettings{
+		Factories: factories,
+		BuildInfo: component.BuildInfo{
+			Command:     "otel-custom-collector",
+			Description: "Custom OpenTelemetry Collector with Filelog and OTLP",
+			Version:     "1.0.0",
 		},
-		Processors: map[component.Type]component.ProcessorFactory{
-			batchprocessor.Type():             batchprocessor.NewFactory(),
-			k8sattributesprocessor.Type():     k8sattributesprocessor.NewFactory(),
-		},
-		Exporters: map[component.Type]component.ExporterFactory{
-			otlpexporter.Type(): otlpexporter.NewFactory(),
-		},
-		Extensions: map[component.Type]component.ExtensionFactory{},
 	}
 
-	cmd := service.NewCommand(
-		service.CollectorSettings{
-			Factories: factories,
-		},
-	)
+	cmd := service.NewCommand(appSettings)
 
 	if err := cmd.Execute(); err != nil {
-		panic(err)
+		log.Fatalf("collector run failed: %v", err)
 	}
 }
+
+// 	cmd := service.NewCommand(
+// 		service.CollectorSettings{
+// 			Factories: factories,
+// 		},
+// 	)
+//
+// 	if err := cmd.Execute(); err != nil {
+// 		panic(err)
+// 	}
+// }
