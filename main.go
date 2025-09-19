@@ -1,16 +1,40 @@
+
+//
+// import (
+// 	"go.opentelemetry.io/collector/component"
+// 	"go.opentelemetry.io/collector/service"
+// 	"go.uber.org/zap"
+// // package main
+// //
+// // import (
+// // 	"go.opentelemetry.io/collector/component"
+// // 	"go.opentelemetry.io/collector/service"
+// // 	"go.uber.org/zap"
+//
+//
+// 	filelogreceiver "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver"
+// 	otlpreceiver "go.opentelemetry.io/collector/receiver/otlpreceiver"
+//
+// 	batchprocessor "go.opentelemetry.io/collector/processor/batchprocessor"
+// 	k8sattributesprocessor "github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor"
+//
+// 	otlpexporter "go.opentelemetry.io/collector/exporter/otlpexporter"
+// )
 package main
 
 import (
-	"go.opentelemetry.io/collector/component"
-	"go.opentelemetry.io/collector/service"
+    "log"
 
-	filelogreceiver "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver"
-	otlpreceiver "go.opentelemetry.io/collector/receiver/otlpreceiver"
+    "go.opentelemetry.io/collector/component"
+    "go.opentelemetry.io/collector/otelcol"
 
-	batchprocessor "go.opentelemetry.io/collector/processor/batchprocessor"
-	k8sattributesprocessor "github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor"
+    filelogreceiver "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver"
+    otlpreceiver "go.opentelemetry.io/collector/receiver/otlpreceiver"
 
-	otlpexporter "go.opentelemetry.io/collector/exporter/otlpexporter"
+    batchprocessor "go.opentelemetry.io/collector/processor/batchprocessor"
+    k8sattributesprocessor "github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor"
+
+    otlpexporter "go.opentelemetry.io/collector/exporter/otlpexporter"
 )
 
 func main() {

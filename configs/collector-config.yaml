@@ -1,11 +1,14 @@
 receivers:
-  otlp:
-    protocols:
-      grpc:
-      http:
   filelog:
-    include: ["/var/log/nginx/*.log"]
+    include: ["/var/log/pods/**/*.log"]
     start_at: beginning
+    include_file_path: true
+    include_file_name: false
+    poll_interval: 200ms
+
+    layout:
+      type: json
+
     operators:
       - type: json_parser
         id: parse_json_logs
@@ -22,7 +25,7 @@ processors:
 
 exporters:
   otlp:
-    endpoint: <your-backend-host>:4317
+    endpoint: your-backend:4317
     tls:
       insecure: true
 
@@ -33,10 +36,6 @@ service:
       processors: [k8sattributes, batch]
       exporters: [otlp]
 
-    traces:
-      receivers: [otlp]
-      processors: [k8sattributes, batch]
-      exporters: [otlp]
 
 
 #receivers:
